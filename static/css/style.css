@@ -1,0 +1,93 @@
+/* Sidebar */
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    min-height: 100vh;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar.collapsed {
+    min-width: 0;
+    max-width: 0;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+#sidebar .nav-link {
+    border-radius: 8px;
+    margin-bottom: 2px;
+    padding: 10px 15px;
+    transition: background-color 0.2s;
+}
+
+#sidebar .nav-link:hover,
+#sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Main content */
+#main-content {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+/* Stat cards */
+.stat-card {
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+}
+
+/* Login / Register pages */
+.auth-card {
+    max-width: 450px;
+    margin: 80px auto;
+}
+
+/* Badge */
+.badge {
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #sidebar {
+        min-width: 0;
+        max-width: 0;
+        overflow: hidden;
+    }
+
+    #sidebar.show {
+        min-width: 250px;
+        max-width: 250px;
+    }
+}
