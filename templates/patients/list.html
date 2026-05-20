@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Patients{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people-fill me-2"></i>Patients</h2>
+    <a href="{{ url_for('patient_add') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus me-1"></i> Add Patient
+    </a>
+</div>
+
+<!-- Search -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-8">
+                <label class="form-label">Search Patients</label>
+                <input type="text" name="search" class="form-control" placeholder="Search by name or phone..." value="{{ search }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary me-2"><i class="bi bi-search me-1"></i> Search</button>
+                {% if search %}<a href="{{ url_for('patient_list') }}" class="btn btn-outline-secondary">Clear</a>{% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Patient List -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        {% if patients %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Phone</th>
+                        <th>Medical Aid</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.id }}</td>
+                        <td>
+                            <a href="{{ url_for('patient_view', patient_id=patient.id) }}" class="text-decoration-none fw-medium">
+                                {{ patient.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.gender }}</td>
+                        <td>{{ patient.phone }}</td>
+                        <td>{{ patient.medical_aid_name or '—' }}</td>
+                        <td>
+                            <a href="{{ url_for('patient_view', patient_id=patient.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ url_for('patient_edit', patient_id=patient.id) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('patient_delete', patient_id=patient.id) }}" class="d-inline" onsubmit="return confirm('Delete patient {{ patient.full_name }}? This will also delete their appointments.');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-person-x display-4"></i>
+            <p class="mt-2">{{ 'No patients found matching your search.' if search else 'No patients registered yet.' }}</p>
+            {% if not search %}
+            <a href="{{ url_for('patient_add') }}" class="btn btn-primary mt-2">
+                <i class="bi bi-person-plus me-1"></i> Add First Patient
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

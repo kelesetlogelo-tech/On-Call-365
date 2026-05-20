@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Add Patient{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person-plus me-2"></i>Add New Patient</h2>
+    <a href="{{ url_for('patient_list') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Patients
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <h5 class="mb-3 text-primary"><i class="bi bi-person me-1"></i> Personal Information</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.first_name.label.text }} *</label>
+                    {{ form.first_name(class="form-control") }}
+                    {% for error in form.first_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.last_name.label.text }} *</label>
+                    {{ form.last_name(class="form-control") }}
+                    {% for error in form.last_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.date_of_birth.label.text }} *</label>
+                    {{ form.date_of_birth(class="form-control", type="date") }}
+                    {% for error in form.date_of_birth.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.gender.label.text }} *</label>
+                    {{ form.gender(class="form-select") }}
+                    {% for error in form.gender.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.phone.label.text }} *</label>
+                    {{ form.phone(class="form-control", placeholder="e.g. 071 234 5678") }}
+                    {% for error in form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.email.label.text }}</label>
+                    {{ form.email(class="form-control") }}
+                    {% for error in form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label">{{ form.address.label.text }}</label>
+                    {{ form.address(class="form-control", rows="2") }}
+                </div>
+            </div>
+
+            <h5 class="mb-3 text-primary"><i class="bi bi-shield-plus me-1"></i> Medical Aid</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.medical_aid_name.label.text }}</label>
+                    {{ form.medical_aid_name(class="form-control", placeholder="e.g. Discovery Health") }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.medical_aid_number.label.text }}</label>
+                    {{ form.medical_aid_number(class="form-control") }}
+                </div>
+            </div>
+
+            <h5 class="mb-3 text-primary"><i class="bi bi-telephone me-1"></i> Emergency Contact</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.emergency_contact_name.label.text }}</label>
+                    {{ form.emergency_contact_name(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.emergency_contact_phone.label.text }}</label>
+                    {{ form.emergency_contact_phone(class="form-control") }}
+                </div>
+            </div>
+
+            <h5 class="mb-3 text-primary"><i class="bi bi-journal-text me-1"></i> Additional Notes</h5>
+            <div class="mb-4">
+                {{ form.notes(class="form-control", rows="3", placeholder="Any additional notes about the patient...") }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i> Save Patient
+            </button>
+            <a href="{{ url_for('patient_list') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

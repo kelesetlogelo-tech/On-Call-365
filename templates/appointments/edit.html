@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Edit Appointment{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-pencil me-2"></i>Edit Appointment #{{ appt.id }}</h2>
+    <a href="{{ url_for('appointment_list') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.patient_id.label.text }} *</label>
+                    {{ form.patient_id(class="form-select") }}
+                    {% for error in form.patient_id.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.doctor_id.label.text }} *</label>
+                    {{ form.doctor_id(class="form-select") }}
+                    {% for error in form.doctor_id.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.appointment_date.label.text }} *</label>
+                    {{ form.appointment_date(class="form-control", type="date") }}
+                    {% for error in form.appointment_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.appointment_time.label.text }} *</label>
+                    {{ form.appointment_time(class="form-control", type="time") }}
+                    {% for error in form.appointment_time.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ form.duration_minutes.label.text }} *</label>
+                    {{ form.duration_minutes(class="form-control") }}
+                    {% for error in form.duration_minutes.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.status.label.text }}</label>
+                    {{ form.status(class="form-select") }}
+                </div>
+                <div class="col-12">
+                    <label class="form-label">{{ form.reason.label.text }} *</label>
+                    {{ form.reason(class="form-control", rows="2") }}
+                    {% for error in form.reason.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label">{{ form.notes.label.text }}</label>
+                    {{ form.notes(class="form-control", rows="2") }}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i> Save Changes
+                </button>
+                <a href="{{ url_for('appointment_list') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
