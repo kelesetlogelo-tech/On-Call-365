@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+from flask_wtf.csrf import CSRFProtect
 
 from config import Config
 from forms import AppointmentForm, DoctorForm, LoginForm, PatientForm, RegisterForm
@@ -12,6 +13,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+
+csrf = CSRFProtect(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
