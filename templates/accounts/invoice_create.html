@@ -50,19 +50,15 @@
             <!-- Line Items -->
             <h5 class="mb-3"><i class="bi bi-list-check me-2"></i>Line Items</h5>
             <div id="line-items">
-                {% for item in form.items %}
                 <div class="row g-2 mb-2 line-item">
                     <div class="col-md-6">
-                        {{ item.description(class="form-control", placeholder="Description") }}
-                        {% if item.description.errors %}
-                        <div class="text-danger small">{{ item.description.errors[0] }}</div>
-                        {% endif %}
+                        <input class="form-control" name="item_description_0" placeholder="Description" required>
                     </div>
                     <div class="col-md-2">
-                        {{ item.quantity(class="form-control", placeholder="Qty", min="1") }}
+                        <input class="form-control" name="item_quantity_0" type="number" placeholder="Qty" min="1" value="1" required>
                     </div>
                     <div class="col-md-3">
-                        {{ item.unit_price(class="form-control", placeholder="Unit Price (ZAR)", step="0.01", min="0") }}
+                        <input class="form-control" name="item_unit_price_0" type="number" placeholder="Unit Price (ZAR)" step="0.01" min="0" required>
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-outline-danger btn-remove-item" title="Remove">
@@ -70,7 +66,6 @@
                         </button>
                     </div>
                 </div>
-                {% endfor %}
             </div>
             <button type="button" class="btn btn-outline-primary btn-sm mb-4" id="addItem">
                 <i class="bi bi-plus-lg me-1"></i> Add Line Item
@@ -92,7 +87,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var itemIndex = {{ form.items | length }};
+    var itemIndex = 1;
 
     document.getElementById('addItem').addEventListener('click', function() {
         var container = document.getElementById('line-items');
@@ -100,13 +95,13 @@ document.addEventListener('DOMContentLoaded', function() {
         row.className = 'row g-2 mb-2 line-item';
         row.innerHTML = `
             <div class="col-md-6">
-                <input class="form-control" name="items-${itemIndex}-description" placeholder="Description" required>
+                <input class="form-control" name="item_description_${itemIndex}" placeholder="Description" required>
             </div>
             <div class="col-md-2">
-                <input class="form-control" name="items-${itemIndex}-quantity" type="number" placeholder="Qty" min="1" value="1" required>
+                <input class="form-control" name="item_quantity_${itemIndex}" type="number" placeholder="Qty" min="1" value="1" required>
             </div>
             <div class="col-md-3">
-                <input class="form-control" name="items-${itemIndex}-unit_price" type="number" placeholder="Unit Price (ZAR)" step="0.01" min="0" required>
+                <input class="form-control" name="item_unit_price_${itemIndex}" type="number" placeholder="Unit Price (ZAR)" step="0.01" min="0" required>
             </div>
             <div class="col-md-1">
                 <button type="button" class="btn btn-outline-danger btn-remove-item" title="Remove">
