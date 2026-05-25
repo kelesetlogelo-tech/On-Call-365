@@ -37,6 +37,11 @@ class PatientForm(FlaskForm):
     phone = StringField("Phone Number", validators=[DataRequired(), Length(max=20)])
     email = EmailField("Email", validators=[Optional(), Email()])
     address = TextAreaField("Address", validators=[Optional()])
+    payment_type = SelectField(
+        "Payment Type",
+        choices=[("Medical Aid", "Medical Aid"), ("Cash", "Cash")],
+        validators=[DataRequired()],
+    )
     medical_aid_name = StringField("Medical Aid Name", validators=[Optional(), Length(max=100)])
     medical_aid_number = StringField("Medical Aid Number", validators=[Optional(), Length(max=50)])
     emergency_contact_name = StringField("Emergency Contact Name", validators=[Optional(), Length(max=150)])

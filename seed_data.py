@@ -29,11 +29,11 @@ def seed():
 
         # Patients
         patients = [
-            Patient(first_name="Thabo", last_name="Mokoena", date_of_birth=date(1985, 3, 15), gender="Male", phone="071 100 2000", email="thabo.m@email.com", address="12 Main Rd, Sandton", medical_aid_name="Discovery Health", medical_aid_number="DH-900001", emergency_contact_name="Lerato Mokoena", emergency_contact_phone="071 200 3000"),
-            Patient(first_name="Anele", last_name="Dlamini", date_of_birth=date(1992, 7, 22), gender="Female", phone="072 300 4000", email="anele.d@email.com", address="45 Oak Ave, Rosebank", medical_aid_name="Bonitas", medical_aid_number="BN-800002"),
-            Patient(first_name="Pieter", last_name="Botha", date_of_birth=date(1978, 11, 8), gender="Male", phone="073 500 6000", email="pieter.b@email.com", address="8 Church St, Pretoria", medical_aid_name="Momentum Health", medical_aid_number="MH-700003"),
-            Patient(first_name="Fatima", last_name="Ismail", date_of_birth=date(2001, 1, 30), gender="Female", phone="074 700 8000", email="fatima.i@email.com", address="22 Lemon Rd, Durban"),
-            Patient(first_name="David", last_name="Mthembu", date_of_birth=date(1965, 5, 12), gender="Male", phone="075 900 1000", address="3 Hill St, Bloemfontein", medical_aid_name="Discovery Health", medical_aid_number="DH-600005", emergency_contact_name="Grace Mthembu", emergency_contact_phone="075 100 2000"),
+            Patient(file_number="KMC26001", first_name="Thabo", last_name="Mokoena", date_of_birth=date(1985, 3, 15), gender="Male", phone="071 100 2000", email="thabo.m@email.com", address="12 Main Rd, Sandton", payment_type="Medical Aid", medical_aid_name="Discovery Health", medical_aid_number="DH-900001", emergency_contact_name="Lerato Mokoena", emergency_contact_phone="071 200 3000"),
+            Patient(file_number="KMC26002", first_name="Anele", last_name="Dlamini", date_of_birth=date(1992, 7, 22), gender="Female", phone="072 300 4000", email="anele.d@email.com", address="45 Oak Ave, Rosebank", payment_type="Medical Aid", medical_aid_name="Bonitas", medical_aid_number="BN-800002"),
+            Patient(file_number="KMC26003", first_name="Pieter", last_name="Botha", date_of_birth=date(1978, 11, 8), gender="Male", phone="073 500 6000", email="pieter.b@email.com", address="8 Church St, Pretoria", payment_type="Medical Aid", medical_aid_name="Momentum Health", medical_aid_number="MH-700003"),
+            Patient(file_number="KMC26004", first_name="Fatima", last_name="Ismail", date_of_birth=date(2001, 1, 30), gender="Female", phone="074 700 8000", email="fatima.i@email.com", address="22 Lemon Rd, Durban", payment_type="Cash"),
+            Patient(file_number="KMC26005", first_name="David", last_name="Mthembu", date_of_birth=date(1965, 5, 12), gender="Male", phone="075 900 1000", address="3 Hill St, Bloemfontein", payment_type="Medical Aid", medical_aid_name="Discovery Health", medical_aid_number="DH-600005", emergency_contact_name="Grace Mthembu", emergency_contact_phone="075 100 2000"),
         ]
         db.session.add_all(patients)
         db.session.flush()
