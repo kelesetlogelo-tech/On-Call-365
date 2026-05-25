@@ -142,6 +142,7 @@ def patient_list():
             (Patient.first_name.ilike(f"%{search}%"))
             | (Patient.last_name.ilike(f"%{search}%"))
             | (Patient.phone.ilike(f"%{search}%"))
+            | (Patient.file_number.ilike(f"%{search}%"))
         ).order_by(Patient.last_name).all()
     else:
         patients = Patient.query.order_by(Patient.last_name).all()
@@ -152,8 +153,10 @@ def patient_list():
 @login_required
 def patient_add():
     form = PatientForm()
+    next_file_number = Patient.generate_next_file_number()
     if form.validate_on_submit():
         patient = Patient(
+            file_number=Patient.generate_next_file_number(),
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             date_of_birth=form.date_of_birth.data,
@@ -161,17 +164,18 @@ def patient_add():
             phone=form.phone.data,
             email=form.email.data,
             address=form.address.data,
-            medical_aid_name=form.medical_aid_name.data,
-            medical_aid_number=form.medical_aid_number.data,
+            payment_type=form.payment_type.data,
+            medical_aid_name=form.medical_aid_name.data if form.payment_type.data == "Medical Aid" else None,
+            medical_aid_number=form.medical_aid_number.data if form.payment_type.data == "Medical Aid" else None,
             emergency_contact_name=form.emergency_contact_name.data,
             emergency_contact_phone=form.emergency_contact_phone.data,
             notes=form.notes.data,
         )
         db.session.add(patient)
         db.session.commit()
-        flash(f"Patient {patient.full_name} added successfully.", "success")
+        flash(f"Patient {patient.full_name} (File: {patient.file_number}) added successfully.", "success")
         return redirect(url_for("patient_view", patient_id=patient.id))
-    return render_template("patients/add.html", form=form)
+    return render_template("patients/add.html", form=form, next_file_number=next_file_number)
 
 
 @app.route("/patients/<int:patient_id>")
@@ -193,6 +197,9 @@ def patient_edit(patient_id):
     form = PatientForm(obj=patient)
     if form.validate_on_submit():
         form.populate_obj(patient)
+        if patient.payment_type == "Cash":
+            patient.medical_aid_name = None
+            patient.medical_aid_number = None
         db.session.commit()
         flash(f"Patient {patient.full_name} updated.", "success")
         return redirect(url_for("patient_view", patient_id=patient.id))

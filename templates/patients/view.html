@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-person me-2"></i>{{ patient.full_name }}</h2>
+    <h2><i class="bi bi-person me-2"></i>{{ patient.full_name }} <small class="text-muted fs-5">({{ patient.file_number }})</small></h2>
     <div>
         <a href="{{ url_for('patient_edit', patient_id=patient.id) }}" class="btn btn-warning">
             <i class="bi bi-pencil me-1"></i> Edit
@@ -23,6 +23,7 @@
             </div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted" style="width:40%;">File Number</th><td><span class="badge bg-secondary">{{ patient.file_number }}</span></td></tr>
                     <tr><th class="text-muted" style="width:40%;">Full Name</th><td>{{ patient.full_name }}</td></tr>
                     <tr><th class="text-muted">Date of Birth</th><td>{{ patient.date_of_birth.strftime('%d %B %Y') }}</td></tr>
                     <tr><th class="text-muted">Age</th><td>{{ patient.age }} years</td></tr>
@@ -38,12 +39,22 @@
     <div class="col-md-6">
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="bi bi-shield-plus me-2"></i>Medical Aid</h5>
+                <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i>Payment Information</h5>
             </div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><th class="text-muted" style="width:40%;">Provider</th><td>{{ patient.medical_aid_name or '—' }}</td></tr>
+                    <tr>
+                        <th class="text-muted" style="width:40%;">Payment Type</th>
+                        <td>
+                            <span class="badge bg-{{ 'success' if patient.payment_type == 'Cash' else 'primary' }}">
+                                {{ patient.payment_type }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% if patient.payment_type == 'Medical Aid' %}
+                    <tr><th class="text-muted">Provider</th><td>{{ patient.medical_aid_name or '—' }}</td></tr>
                     <tr><th class="text-muted">Number</th><td>{{ patient.medical_aid_number or '—' }}</td></tr>
+                    {% endif %}
                 </table>
             </div>
         </div>

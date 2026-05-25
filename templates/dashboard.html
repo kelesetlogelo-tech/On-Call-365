@@ -176,7 +176,7 @@
                             <a href="{{ url_for('patient_view', patient_id=patient.id) }}" class="text-decoration-none fw-medium">
                                 {{ patient.full_name }}
                             </a>
-                            <br><small class="text-muted">{{ patient.phone }}</small>
+                            <br><small class="text-muted">{{ patient.file_number }} &middot; {{ patient.phone }}</small>
                         </div>
                         <span class="badge bg-light text-dark">Age {{ patient.age }}</span>
                     </li>

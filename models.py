@@ -28,7 +28,11 @@ class User(UserMixin, db.Model):
 class Patient(db.Model):
     __tablename__ = "patients"
 
+    FILE_NUMBER_PREFIX = "KMC"
+    FILE_NUMBER_START = 26001
+
     id = db.Column(db.Integer, primary_key=True)
+    file_number = db.Column(db.String(20), unique=True, nullable=False)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
@@ -36,6 +40,7 @@ class Patient(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120))
     address = db.Column(db.Text)
+    payment_type = db.Column(db.String(20), nullable=False, default="Medical Aid")
     medical_aid_name = db.Column(db.String(100))
     medical_aid_number = db.Column(db.String(50))
     emergency_contact_name = db.Column(db.String(150))
@@ -55,6 +60,18 @@ class Patient(db.Model):
         return today.year - self.date_of_birth.year - (
             (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
         )
+
+    @staticmethod
+    def generate_next_file_number():
+        last_patient = (
+            Patient.query.order_by(Patient.id.desc()).first()
+        )
+        if last_patient and last_patient.file_number:
+            numeric_part = int(last_patient.file_number[len(Patient.FILE_NUMBER_PREFIX):])
+            next_number = numeric_part + 1
+        else:
+            next_number = Patient.FILE_NUMBER_START
+        return f"{Patient.FILE_NUMBER_PREFIX}{next_number}"
 
 
 class Doctor(db.Model):
