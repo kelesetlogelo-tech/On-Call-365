@@ -448,15 +448,20 @@ def invoice_create():
         db.session.add(invoice)
         db.session.flush()
 
-        for item_form in form.items:
-            if item_form.description.data:
+        idx = 0
+        while f"item_description_{idx}" in request.form:
+            desc = request.form.get(f"item_description_{idx}", "").strip()
+            qty = request.form.get(f"item_quantity_{idx}", "1")
+            price = request.form.get(f"item_unit_price_{idx}", "0")
+            if desc:
                 item = InvoiceItem(
                     invoice_id=invoice.id,
-                    description=item_form.description.data,
-                    quantity=item_form.quantity.data,
-                    unit_price=float(item_form.unit_price.data),
+                    description=desc,
+                    quantity=int(qty),
+                    unit_price=float(price),
                 )
                 db.session.add(item)
+            idx += 1
 
         db.session.commit()
         flash(f"Invoice {invoice.invoice_number} created successfully.", "success")
