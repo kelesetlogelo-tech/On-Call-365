@@ -5,7 +5,7 @@ import sys
 from datetime import date, time, timedelta
 
 from app import app, db
-from models import Appointment, Doctor, Patient, User
+from models import Appointment, Doctor, Invoice, InvoiceItem, Patient, User
 
 
 def seed():
@@ -50,6 +50,39 @@ def seed():
             Appointment(patient_id=patients[1].id, doctor_id=doctors[0].id, appointment_date=today - timedelta(days=5), appointment_time=time(9, 30), duration_minutes=30, reason="Skin rash consultation", status="Cancelled"),
         ]
         db.session.add_all(appointments)
+        db.session.flush()
+
+        # Invoices (for cash-paying patient Fatima Ismail)
+        invoices = [
+            Invoice(
+                invoice_number="INV1001",
+                patient_id=patients[3].id,
+                invoice_date=today - timedelta(days=5),
+                due_date=today - timedelta(days=5) + timedelta(days=30),
+                payment_method="CASH",
+                status="Paid",
+                notes="Payment received at reception.",
+            ),
+            Invoice(
+                invoice_number="INV1002",
+                patient_id=patients[3].id,
+                invoice_date=today - timedelta(days=1),
+                due_date=today + timedelta(days=29),
+                payment_method="EFT",
+                status="Unpaid",
+            ),
+        ]
+        db.session.add_all(invoices)
+        db.session.flush()
+
+        # Invoice items
+        items = [
+            InvoiceItem(invoice_id=invoices[0].id, description="General Consultation", quantity=1, unit_price=650.00),
+            InvoiceItem(invoice_id=invoices[0].id, description="Blood Test", quantity=1, unit_price=350.00),
+            InvoiceItem(invoice_id=invoices[1].id, description="Follow-up Consultation", quantity=1, unit_price=450.00),
+            InvoiceItem(invoice_id=invoices[1].id, description="Prescription Medication", quantity=2, unit_price=120.00),
+        ]
+        db.session.add_all(items)
 
         db.session.commit()
         print("Database seeded successfully!")

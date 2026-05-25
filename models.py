@@ -107,3 +107,68 @@ class Appointment(db.Model):
     status = db.Column(db.String(20), default="Scheduled")
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Invoice(db.Model):
+    __tablename__ = "invoices"
+
+    INVOICE_PREFIX = "INV"
+    INVOICE_START = 1001
+
+    PAYMENT_METHODS = [
+        ("EFT", "EFT"),
+        ("CASH", "CASH"),
+        ("PAYSHAP", "PAYSHAP"),
+        ("CASHSEND", "CASHSEND"),
+        ("EWALLET", "EWALLET"),
+        ("CAPITECPAY", "CAPITECPAY"),
+    ]
+
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_number = db.Column(db.String(20), unique=True, nullable=False)
+    patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"), nullable=False)
+    invoice_date = db.Column(db.Date, nullable=False, default=date.today)
+    due_date = db.Column(db.Date)
+    payment_method = db.Column(db.String(20), nullable=False, default="CASH")
+    status = db.Column(db.String(20), nullable=False, default="Unpaid")
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    patient = db.relationship("Patient", backref=db.backref("invoices", lazy=True))
+    items = db.relationship("InvoiceItem", backref="invoice", lazy=True, cascade="all, delete-orphan")
+
+    @property
+    def subtotal(self):
+        return sum(item.total for item in self.items)
+
+    @property
+    def vat_amount(self):
+        return round(self.subtotal * 0.15, 2)
+
+    @property
+    def total(self):
+        return round(self.subtotal + self.vat_amount, 2)
+
+    @staticmethod
+    def generate_next_invoice_number():
+        last_invoice = Invoice.query.order_by(Invoice.id.desc()).first()
+        if last_invoice and last_invoice.invoice_number:
+            numeric_part = int(last_invoice.invoice_number[len(Invoice.INVOICE_PREFIX):])
+            next_number = numeric_part + 1
+        else:
+            next_number = Invoice.INVOICE_START
+        return f"{Invoice.INVOICE_PREFIX}{next_number}"
+
+
+class InvoiceItem(db.Model):
+    __tablename__ = "invoice_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_id = db.Column(db.Integer, db.ForeignKey("invoices.id"), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    unit_price = db.Column(db.Float, nullable=False)
+
+    @property
+    def total(self):
+        return round(self.quantity * self.unit_price, 2)

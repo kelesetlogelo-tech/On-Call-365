@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+            margin: 0;
+            padding: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #0d6efd;
+            padding-bottom: 20px;
+        }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .company-subtitle {
+            color: #666;
+            font-size: 11px;
+        }
+        .invoice-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            text-align: right;
+        }
+        .invoice-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #555;
+        }
+        .invoice-meta strong {
+            color: #333;
+        }
+        .bill-to {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+        }
+        .bill-to h4 {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #888;
+            margin: 0 0 8px 0;
+            letter-spacing: 1px;
+        }
+        .bill-to p {
+            margin: 2px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        thead th {
+            background: #0d6efd;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        tbody td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .totals {
+            margin-top: 10px;
+            width: 300px;
+            margin-left: auto;
+        }
+        .totals tr td {
+            padding: 6px 8px;
+            border: none;
+        }
+        .totals .grand-total {
+            background: #0d6efd;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .notes {
+            margin-top: 30px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 4px;
+        }
+        .notes h4 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #856404;
+            margin: 0 0 5px 0;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+        .payment-badge {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-paid { background: #198754; color: white; }
+        .status-unpaid { background: #ffc107; color: #333; }
+        .status-overdue { background: #dc3545; color: white; }
+        .status-cancelled { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="company-name">MedPractice</div>
+            <div class="company-subtitle">Medical Practice Management</div>
+        </div>
+        <div>
+            <div class="invoice-title">INVOICE</div>
+            <div class="invoice-meta">
+                <p><strong>Invoice #:</strong> {{ invoice.invoice_number }}</p>
+                <p><strong>Date:</strong> {{ invoice.invoice_date.strftime('%d %B %Y') }}</p>
+                {% if invoice.due_date %}
+                <p><strong>Due Date:</strong> {{ invoice.due_date.strftime('%d %B %Y') }}</p>
+                {% endif %}
+                <p><strong>Payment Method:</strong> <span class="payment-badge">{{ invoice.payment_method }}</span></p>
+                <p><strong>Status:</strong>
+                    <span class="status-badge status-{{ invoice.status|lower }}">{{ invoice.status }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bill-to">
+        <h4>Bill To</h4>
+        <p><strong>{{ invoice.patient.full_name }}</strong></p>
+        <p>File #: {{ invoice.patient.file_number }}</p>
+        {% if invoice.patient.address %}<p>{{ invoice.patient.address }}</p>{% endif %}
+        {% if invoice.patient.phone %}<p>Tel: {{ invoice.patient.phone }}</p>{% endif %}
+        {% if invoice.patient.email %}<p>Email: {{ invoice.patient.email }}</p>{% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%">Description</th>
+                <th class="text-center" style="width: 10%">Qty</th>
+                <th class="text-right" style="width: 20%">Unit Price</th>
+                <th class="text-right" style="width: 20%">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-right">R {{ "%.2f"|format(item.unit_price) }}</td>
+                <td class="text-right">R {{ "%.2f"|format(item.total) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="totals">
+        <tr>
+            <td class="text-right"><strong>Subtotal</strong></td>
+            <td class="text-right">R {{ "%.2f"|format(invoice.subtotal) }}</td>
+        </tr>
+        <tr>
+            <td class="text-right"><strong>VAT (15%)</strong></td>
+            <td class="text-right">R {{ "%.2f"|format(invoice.vat_amount) }}</td>
+        </tr>
+        <tr class="grand-total">
+            <td class="text-right">Total (ZAR)</td>
+            <td class="text-right">R {{ "%.2f"|format(invoice.total) }}</td>
+        </tr>
+    </table>
+
+    {% if invoice.notes %}
+    <div class="notes">
+        <h4>Notes</h4>
+        <p>{{ invoice.notes }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Thank you for your payment. &mdash; MedPractice</p>
+    </div>
+</body>
+</html>

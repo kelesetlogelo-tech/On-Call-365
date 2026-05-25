@@ -1,7 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     DateField,
+    DecimalField,
     EmailField,
+    FieldList,
+    FormField,
     IntegerField,
     PasswordField,
     SelectField,
@@ -95,3 +98,32 @@ class AppointmentForm(FlaskForm):
         validators=[DataRequired()],
     )
     notes = TextAreaField("Notes", validators=[Optional()])
+
+
+class InvoiceItemForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    description = StringField("Description", validators=[DataRequired(), Length(max=200)])
+    quantity = IntegerField("Qty", default=1, validators=[DataRequired(), NumberRange(min=1)])
+    unit_price = DecimalField("Unit Price (ZAR)", places=2, validators=[DataRequired(), NumberRange(min=0)])
+
+
+class InvoiceForm(FlaskForm):
+    patient_id = SelectField("Patient", coerce=int, validators=[DataRequired()])
+    invoice_date = DateField("Invoice Date", validators=[DataRequired()])
+    due_date = DateField("Due Date", validators=[Optional()])
+    payment_method = SelectField(
+        "Payment Method",
+        choices=[
+            ("EFT", "EFT"),
+            ("CASH", "CASH"),
+            ("PAYSHAP", "PAYSHAP"),
+            ("CASHSEND", "CASHSEND"),
+            ("EWALLET", "EWALLET"),
+            ("CAPITECPAY", "CAPITECPAY"),
+        ],
+        validators=[DataRequired()],
+    )
+    notes = TextAreaField("Notes", validators=[Optional()])
+    items = FieldList(FormField(InvoiceItemForm), min_entries=1)

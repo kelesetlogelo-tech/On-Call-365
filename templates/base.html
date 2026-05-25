@@ -37,6 +37,11 @@
                     <i class="bi bi-person-badge-fill me-2"></i> Doctors
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {{ 'active' if request.endpoint|default('') in ['accounts_summary', 'invoice_list', 'invoice_create', 'invoice_view'] }}" href="{{ url_for('accounts_summary') }}">
+                    <i class="bi bi-receipt-cutoff me-2"></i> Accounts
+                </a>
+            </li>
         </ul>
         <div class="mt-auto p-3 border-top border-secondary">
             <div class="d-flex align-items-center mb-2">
