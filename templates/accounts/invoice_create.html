@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Create Invoice{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-receipt me-2"></i>Create Invoice</h2>
+    <a href="{{ url_for('invoice_list') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Invoices
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="badge bg-primary fs-6">Invoice #: {{ next_invoice_number }}</span>
+            <span class="badge bg-light text-dark fs-6 ms-2">Currency: ZAR</span>
+        </div>
+
+        <form method="POST" id="invoiceForm">
+            {{ form.hidden_tag() }}
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{{ form.patient_id.label.text }}</label>
+                    {{ form.patient_id(class="form-select") }}
+                    {% if form.patient_id.errors %}
+                    <div class="text-danger small">{{ form.patient_id.errors[0] }}</div>
+                    {% endif %}
+                    {% if not form.patient_id.choices %}
+                    <div class="text-warning small mt-1"><i class="bi bi-exclamation-triangle me-1"></i>No cash-paying patients found. Only cash patients can be invoiced.</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">{{ form.invoice_date.label.text }}</label>
+                    {{ form.invoice_date(class="form-control", type="date") }}
+                    {% if form.invoice_date.errors %}
+                    <div class="text-danger small">{{ form.invoice_date.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">{{ form.due_date.label.text }}</label>
+                    {{ form.due_date(class="form-control", type="date") }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">{{ form.payment_method.label.text }}</label>
+                    {{ form.payment_method(class="form-select") }}
+                </div>
+            </div>
+
+            <!-- Line Items -->
+            <h5 class="mb-3"><i class="bi bi-list-check me-2"></i>Line Items</h5>
+            <div id="line-items">
+                {% for item in form.items %}
+                <div class="row g-2 mb-2 line-item">
+                    <div class="col-md-6">
+                        {{ item.description(class="form-control", placeholder="Description") }}
+                        {% if item.description.errors %}
+                        <div class="text-danger small">{{ item.description.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                        {{ item.quantity(class="form-control", placeholder="Qty", min="1") }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ item.unit_price(class="form-control", placeholder="Unit Price (ZAR)", step="0.01", min="0") }}
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger btn-remove-item" title="Remove">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm mb-4" id="addItem">
+                <i class="bi bi-plus-lg me-1"></i> Add Line Item
+            </button>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-12">
+                    <label class="form-label fw-bold">{{ form.notes.label.text }}</label>
+                    {{ form.notes(class="form-control", rows="2", placeholder="Optional notes...") }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-lg me-1"></i> Create Invoice
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var itemIndex = {{ form.items | length }};
+
+    document.getElementById('addItem').addEventListener('click', function() {
+        var container = document.getElementById('line-items');
+        var row = document.createElement('div');
+        row.className = 'row g-2 mb-2 line-item';
+        row.innerHTML = `
+            <div class="col-md-6">
+                <input class="form-control" name="items-${itemIndex}-description" placeholder="Description" required>
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" name="items-${itemIndex}-quantity" type="number" placeholder="Qty" min="1" value="1" required>
+            </div>
+            <div class="col-md-3">
+                <input class="form-control" name="items-${itemIndex}-unit_price" type="number" placeholder="Unit Price (ZAR)" step="0.01" min="0" required>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-outline-danger btn-remove-item" title="Remove">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(row);
+        itemIndex++;
+        attachRemoveHandlers();
+    });
+
+    function attachRemoveHandlers() {
+        document.querySelectorAll('.btn-remove-item').forEach(function(btn) {
+            btn.onclick = function() {
+                var items = document.querySelectorAll('.line-item');
+                if (items.length > 1) {
+                    btn.closest('.line-item').remove();
+                }
+            };
+        });
+    }
+
+    attachRemoveHandlers();
+});
+</script>
+{% endblock %}

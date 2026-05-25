@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}Accounts Summary{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-graph-up me-2"></i>Accounts Summary</h2>
+    <div>
+        <a href="{{ url_for('invoice_create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> New Invoice
+        </a>
+        <a href="{{ url_for('invoice_list') }}" class="btn btn-outline-secondary ms-1">
+            <i class="bi bi-list-ul me-1"></i> All Invoices
+        </a>
+    </div>
+</div>
+
+<!-- Period Toggle -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('accounts_summary', period='weekly') }}" class="btn btn-{{ 'primary' if period == 'weekly' else 'outline-primary' }} btn-sm">
+                <i class="bi bi-calendar-week me-1"></i>Weekly
+            </a>
+            <a href="{{ url_for('accounts_summary', period='monthly') }}" class="btn btn-{{ 'primary' if period == 'monthly' else 'outline-primary' }} btn-sm">
+                <i class="bi bi-calendar-month me-1"></i>Monthly
+            </a>
+            <span class="badge bg-light text-dark align-self-center ms-2 fs-6">{{ period_label }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-primary bg-gradient text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-white-50">Total Revenue</h6>
+                        <h3 class="mb-0">R {{ "%.2f"|format(total_revenue) }}</h3>
+                    </div>
+                    <i class="bi bi-currency-exchange display-6 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-success bg-gradient text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-white-50">Cash Revenue</h6>
+                        <h3 class="mb-0">R {{ "%.2f"|format(cash_revenue) }}</h3>
+                    </div>
+                    <i class="bi bi-cash-stack display-6 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-info bg-gradient text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-white-50">Medical Aid Revenue</h6>
+                        <h3 class="mb-0">R {{ "%.2f"|format(medical_aid_revenue) }}</h3>
+                    </div>
+                    <i class="bi bi-shield-plus display-6 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-warning bg-gradient text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-white-50">Invoices</h6>
+                        <h3 class="mb-0">{{ invoice_count }}</h3>
+                    </div>
+                    <i class="bi bi-receipt display-6 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Breakdown -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Revenue Breakdown</h5>
+            </div>
+            <div class="card-body">
+                {% if total_revenue > 0 %}
+                {% set cash_pct = (cash_revenue / total_revenue * 100) if total_revenue > 0 else 0 %}
+                {% set aid_pct = 100 - cash_pct %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-success me-1">&nbsp;</span> Cash</span>
+                        <span>R {{ "%.2f"|format(cash_revenue) }} ({{ "%.1f"|format(cash_pct) }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" style="width: {{ cash_pct }}%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-info me-1">&nbsp;</span> Medical Aid</span>
+                        <span>R {{ "%.2f"|format(medical_aid_revenue) }} ({{ "%.1f"|format(aid_pct) }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-info" style="width: {{ aid_pct }}%"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-graph-down display-4"></i>
+                    <p class="mt-2">No revenue data for this period.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i>Payment Status</h5>
+            </div>
+            <div class="card-body">
+                {% if invoice_count > 0 %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-success me-1">&nbsp;</span> Paid</span>
+                        <span>R {{ "%.2f"|format(total_paid) }}</span>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" style="width: {{ (total_paid / total_revenue * 100) if total_revenue > 0 else 0 }}%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-danger me-1">&nbsp;</span> Outstanding</span>
+                        <span>R {{ "%.2f"|format(total_unpaid) }}</span>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-danger" style="width: {{ (total_unpaid / total_revenue * 100) if total_revenue > 0 else 0 }}%"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-wallet display-4"></i>
+                    <p class="mt-2">No invoices for this period.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Invoices Table -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Invoices in Period</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if invoices %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Patient</th>
+                        <th>Date</th>
+                        <th>Payment Method</th>
+                        <th>Total (ZAR)</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inv in invoices %}
+                    <tr>
+                        <td><strong>{{ inv.invoice_number }}</strong></td>
+                        <td>{{ inv.patient.full_name }}</td>
+                        <td>{{ inv.invoice_date.strftime('%d %b %Y') }}</td>
+                        <td><span class="badge bg-secondary">{{ inv.payment_method }}</span></td>
+                        <td>R {{ "%.2f"|format(inv.total) }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if inv.status == 'Paid' else 'warning text-dark' if inv.status == 'Unpaid' else 'danger' if inv.status == 'Overdue' else 'secondary' }}">
+                                {{ inv.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('invoice_view', invoice_id=inv.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-receipt display-4"></i>
+            <p class="mt-2">No invoices for this period.</p>
+            <a href="{{ url_for('invoice_create') }}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-lg me-1"></i> Create Invoice
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
