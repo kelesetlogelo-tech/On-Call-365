@@ -12,10 +12,18 @@
 <!-- Filter -->
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
+        {% if date_filter %}
+        <div class="mb-2">
+            <span class="badge bg-info me-1"><i class="bi bi-calendar-day me-1"></i>{{ date_filter }}</span>
+            <a href="{{ url_for('appointment_list', status=status_filter) if status_filter else url_for('appointment_list') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-x-lg me-1"></i>Clear date filter
+            </a>
+        </div>
+        {% endif %}
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ url_for('appointment_list') }}" class="btn btn-{{ 'primary' if not status_filter else 'outline-primary' }} btn-sm">All</a>
+            <a href="{{ url_for('appointment_list', date=date_filter) if date_filter else url_for('appointment_list') }}" class="btn btn-{{ 'primary' if not status_filter else 'outline-primary' }} btn-sm">All</a>
             {% for status in ['Scheduled', 'Confirmed', 'In Progress', 'Completed', 'Cancelled', 'No Show'] %}
-            <a href="{{ url_for('appointment_list', status=status) }}" class="btn btn-{{ 'primary' if status_filter == status else 'outline-primary' }} btn-sm">{{ status }}</a>
+            <a href="{{ url_for('appointment_list', status=status, date=date_filter) if date_filter else url_for('appointment_list', status=status) }}" class="btn btn-{{ 'primary' if status_filter == status else 'outline-primary' }} btn-sm">{{ status }}</a>
             {% endfor %}
         </div>
     </div>
@@ -97,7 +105,7 @@
         {% else %}
         <div class="text-center text-muted py-5">
             <i class="bi bi-calendar-x display-4"></i>
-            <p class="mt-2">{{ 'No appointments with this status.' if status_filter else 'No appointments scheduled yet.' }}</p>
+            <p class="mt-2">{{ 'No appointments matching the selected filters.' if (status_filter or date_filter) else 'No appointments scheduled yet.' }}</p>
             <a href="{{ url_for('appointment_add') }}" class="btn btn-primary mt-2">
                 <i class="bi bi-plus-lg me-1"></i> Schedule Appointment
             </a>

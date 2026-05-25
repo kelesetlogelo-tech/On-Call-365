@@ -127,6 +127,7 @@ def dashboard():
         recent_patients=recent_patients,
         weekly_stats=weekly_stats,
         status_counts=status_counts,
+        today=today,
     )
 
 
@@ -289,11 +290,18 @@ def doctor_toggle(doctor_id):
 @login_required
 def appointment_list():
     status_filter = request.args.get("status", "")
+    date_filter = request.args.get("date", "")
     query = Appointment.query
     if status_filter:
         query = query.filter_by(status=status_filter)
+    if date_filter:
+        try:
+            filter_date = datetime.strptime(date_filter, "%Y-%m-%d").date()
+            query = query.filter_by(appointment_date=filter_date)
+        except ValueError:
+            pass
     appointments = query.order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc()).all()
-    return render_template("appointments/list.html", appointments=appointments, status_filter=status_filter)
+    return render_template("appointments/list.html", appointments=appointments, status_filter=status_filter, date_filter=date_filter)
 
 
 @app.route("/appointments/add", methods=["GET", "POST"])
